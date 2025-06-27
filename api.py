@@ -20,34 +20,43 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import casbin
+from fastapi_authz import CasbinMiddleware
+from starlette.middleware.authentication import AuthenticationMiddleware
+
+import basic_auth as basic_auth
 
 # Global CONSTANTS
 
 
 ## Global Variables
 
-app = FastAPI(title='RK-InterRIoT-AT2-POR-Pt3-2025-S1')
+api = FastAPI(title='RK-InterRIoT-AT2-POR-Pt3-2025-S1')
 
 enforcer = casbin.Enforcer(
     'api/rbac_model.conf',
     'api/rbac_policy.csv',
 )
 
+backend = basic_auth.BasicAuth()
+
+api.add_middleware(CasbinMiddleware, enforcer=enforcer)
+api.add_middleware(AuthenticationMiddleware, backend=backend)
+
 
 BASE_PATH = Path(__file__).parent
 print(BASE_PATH)
 
-app.mount("/static",
+api.mount("/static",
           StaticFiles(directory="static"),
           name="static")
 
-app.mount("/css",
+api.mount("/css",
           StaticFiles(directory="static/css"),
           name="css")
-app.mount("/js",
+api.mount("/js",
           StaticFiles(directory="static/js"),
           name="js")
-app.mount("/images",
+api.mount("/images",
           StaticFiles(directory="static/img"),
           name="images")
 
@@ -55,25 +64,25 @@ TEMPLATES = Jinja2Templates(directory="templates")
 
 
 # Functions/Methods
-@app.get("/", response_class=HTMLResponse)
+@api.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return TEMPLATES.TemplateResponse(
         request=request,
         name="pages/home.html"
     )
 
-@app.get("/api")
+@api.get("/api")
 async def api_index():
-    return 'Hello, world'
+    return '{"success":true, "message": "Welcome", "data": ["greeting": "Hello, world."]}'
 
-@app.get("/about", response_class=HTMLResponse)
+@api.get("/about", response_class=HTMLResponse)
 async def about(request: Request):
     return TEMPLATES.TemplateResponse(
         request=request,
         name="pages/about.html"
     )
 
-@app.get("/api/data")
+@api.get("/api/data")
 async def api_data(request: Request):
     return { 'name':'Frank Spencer' }
 
