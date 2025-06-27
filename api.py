@@ -2,8 +2,8 @@
  Assessment Title: Portfolio Part X
  Cluster:          Intermediate RIoT
  Qualification:    ICT50220 Diploma of Information Technology (Advanced Programming)
- Name:             YOUR NAME
- Student ID:       xxxxxxxxx
+ Name:             ryan kelley
+ Student ID:       20136584
  Year/Semester:    20YY/SN
 
  YOUR SUMMARY OF PORTFOLIO ACTIVITY
@@ -19,12 +19,20 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+import casbin
+
 # Global CONSTANTS
 
 
 ## Global Variables
 
 app = FastAPI(title='RK-InterRIoT-AT2-POR-Pt3-2025-S1')
+
+enforcer = casbin.Enforcer(
+    'api/rbac_model.conf',
+    'api/rbac_policy.csv',
+)
+
 
 BASE_PATH = Path(__file__).parent
 print(BASE_PATH)
