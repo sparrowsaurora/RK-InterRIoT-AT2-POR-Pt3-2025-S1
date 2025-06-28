@@ -86,4 +86,12 @@ async def about(request: Request):
 async def api_data(request: Request):
     return { 'name':'Frank Spencer' }
 
+@api.get("/api/ds1/res1 ")
+async def api_ds1(request: Request):
+    return "ds1/res1"
+
+@api.get("/api/ds2/res2 ")
+async def api_ds2(request: Request):
+    return "ds2/res2"
+
 # Main Code
